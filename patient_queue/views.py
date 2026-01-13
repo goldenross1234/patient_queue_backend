@@ -47,8 +47,25 @@ class QueueViewSet(viewsets.ModelViewSet):
         if not next_patient:
             return Response({"message": "No more patients in queue"})
 
+        channel_layer = get_channel_layer()
+
+        # Broadcast "calling"
+        async_to_sync(channel_layer.group_send)(
+            "queue",
+            {
+                "type": "queue_update",
+                "data": {
+                    "state": "calling"
+                },
+            }
+        )
+
+        import time
+        time.sleep(2)   # 2-second calling animation
+
         next_patient.status = "serving"
         next_patient.save()
+
         
         # send_mail(
         #     subject="You are now being served",
@@ -108,11 +125,13 @@ class QueueViewSet(viewsets.ModelViewSet):
             {
                 "type": "queue_update",
                 "data": {
+                    "state": "serving",
                     "queue_number": next_patient.queue_number,
                     "patient_name": next_patient.patient_name,
                 },
             }
         )
+
 
         return Response({
             "queue_number": next_patient.queue_number,
