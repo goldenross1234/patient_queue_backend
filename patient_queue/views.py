@@ -119,3 +119,19 @@ class QueueViewSet(viewsets.ModelViewSet):
             "patient_name": next_patient.patient_name
         })
 
+@action(detail=False, methods=["get"])
+def current(self, request):
+    today = now().date()
+
+    current = QueueItem.objects.filter(
+        queue_date=today,
+        status="serving"
+    ).first()
+
+    if not current:
+        return Response({"queue_number": None, "patient_name": None})
+
+    return Response({
+        "queue_number": current.queue_number,
+        "patient_name": current.patient_name
+    })
