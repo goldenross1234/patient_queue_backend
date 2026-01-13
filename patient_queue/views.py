@@ -50,13 +50,55 @@ class QueueViewSet(viewsets.ModelViewSet):
         next_patient.status = "serving"
         next_patient.save()
         
+        # send_mail(
+        #     subject="You are now being served",
+        #     message=f"Hello {next_patient.patient_name},\n\nYour queue number {next_patient.queue_number} is now being served. Please proceed to the doctor's room.\n\nOB-GYNE Clinic",
+        #     from_email=None,
+        #     recipient_list=[next_patient.email],
+        #     fail_silently=True,
+        # )
+        
+
+        # Email to the patient being served
         send_mail(
             subject="You are now being served",
-            message=f"Hello {next_patient.patient_name},\n\nYour queue number {next_patient.queue_number} is now being served. Please proceed to the doctor's room.\n\nOB-GYNE Clinic",
+            message=f"""
+        Hello {next_patient.patient_name},
+
+        Your queue number {next_patient.queue_number} is now being served.
+        Please proceed to the doctor's room.
+
+        OB-GYNE Clinic
+        """,
             from_email=None,
             recipient_list=[next_patient.email],
             fail_silently=True,
         )
+
+        # Notify all waiting patients
+        waiting_patients = QueueItem.objects.filter(
+            queue_date=today,
+            status="waiting"
+        )
+
+        for patient in waiting_patients:
+            send_mail(
+                subject=f"Now Serving: #{next_patient.queue_number}",
+                message=f"""
+        Hello {patient.patient_name},
+
+        The clinic is now serving queue number {next_patient.queue_number}
+        ({next_patient.patient_name}).
+
+        Please be ready. Your turn is approaching.
+
+        OB-GYNE Clinic
+        """,
+                from_email=None,
+                recipient_list=[patient.email],
+                fail_silently=True,
+            )
+
 
 
         # 🔥 Broadcast to WebSocket
