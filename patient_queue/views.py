@@ -8,9 +8,11 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.core.mail import send_mail
 from .models import QueueLog
-from .models import QueueLog
+from rest_framework.permissions import IsAuthenticated
+
 
 class QueueViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     serializer_class = QueueItemSerializer
 
     def get_queryset(self):
