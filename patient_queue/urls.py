@@ -1,9 +1,12 @@
+from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import QueueViewSet
-from .log_views import LogViewSet   # ← THIS WAS MISSING
+from .views import QueueViewSet, me
+from .log_views import LogViewSet
 
 router = DefaultRouter()
 router.register("queue", QueueViewSet, basename="queue")
 router.register("logs", LogViewSet, basename="logs")
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path("me/", me),
+]
