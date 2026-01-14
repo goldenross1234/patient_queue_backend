@@ -7,6 +7,8 @@ from rest_framework.decorators import action
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.core.mail import send_mail
+from .models import QueueLog
+from .models import QueueLog
 
 class QueueViewSet(viewsets.ModelViewSet):
     serializer_class = QueueItemSerializer
@@ -35,6 +37,8 @@ class QueueViewSet(viewsets.ModelViewSet):
     def serve_next(self, request):
         today = now().date()
 
+        QueueLog.objects.create(event="CALL", message="Staff clicked Serve Next")
+
         # Mark current serving as done
         QueueItem.objects.filter(queue_date=today, status="serving").update(status="done")
 
@@ -48,6 +52,8 @@ class QueueViewSet(viewsets.ModelViewSet):
             return Response({"message": "No more patients in queue"})
 
         channel_layer = get_channel_layer()
+        
+        QueueLog.objects.create(event="CALLING", message="Broadcasting calling message")
 
         # Broadcast "calling"
         async_to_sync(channel_layer.group_send)(
@@ -116,6 +122,10 @@ class QueueViewSet(viewsets.ModelViewSet):
                 fail_silently=True,
             )
 
+        QueueLog.objects.create(
+            event="EMAIL",
+            message=f"Email sent to {next_patient.patient_name} and all waiting patients"
+        )
 
 
         # 🔥 Broadcast to WebSocket
@@ -130,6 +140,11 @@ class QueueViewSet(viewsets.ModelViewSet):
                     "patient_name": next_patient.patient_name,
                 },
             }
+        )
+
+        QueueLog.objects.create(
+            event="SERVING",
+            message=f"Now serving {next_patient.patient_name}"
         )
 
 

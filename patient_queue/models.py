@@ -24,3 +24,11 @@ class QueueItem(models.Model):
 
     def __str__(self):
         return f"{self.queue_date} - {self.queue_number} - {self.patient_name}"
+
+class QueueLog(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    event = models.CharField(max_length=50)
+    message = models.TextField()
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.event}"
