@@ -37,6 +37,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'patient_queue',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -161,3 +163,23 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
+
+AUTH_USER_MODEL = "accounts.User"
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Clinic Admin",
+    "site_header": "OB-GYNE Clinic",
+    "site_brand": "Clinic Control Panel",
+    "welcome_sign": "Welcome to the OB-GYNE Clinic System",
+
+    "topmenu_links": [
+        {"name": "Website", "url": "/home", "new_window": True},
+        {"name": "Queue", "url": "/", "new_window": True},
+    ],
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+}
+
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
