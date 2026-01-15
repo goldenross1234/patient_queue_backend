@@ -32,6 +32,26 @@ class QueueViewSet(viewsets.ModelViewSet):
             email=request.data["email"],
         )
 
+        # Send confirmation email
+        send_mail(
+            subject="You are in the OB-GYNE Clinic Queue",
+            message=f"""
+        Hello {item.patient_name},
+
+        You have been successfully added to today's queue.
+
+        Your queue number is: {item.queue_number}
+
+        You will receive another email when your number is being served.
+
+        OB-GYNE Clinic
+        """,
+            from_email=None,
+            recipient_list=[item.email],
+            fail_silently=True,
+        )
+
+
         return Response(QueueItemSerializer(item).data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["post"])
