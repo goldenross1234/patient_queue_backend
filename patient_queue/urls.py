@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import QueueViewSet, me
 from .log_views import LogViewSet
@@ -11,4 +11,6 @@ router.register("logs", LogViewSet, basename="logs")
 urlpatterns = router.urls + [
     path("me/", me),
     path("api/token/", CustomTokenObtainPairView.as_view(), name="token"),
+    path("patients/", include("patients.urls")),
+    path("accounts/", include("accounts.urls")),
 ]

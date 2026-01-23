@@ -5,8 +5,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
+        # roles array
+        roles = []
+
+        if user.is_superuser:
+            roles.append("admin")
+        elif user.is_staff:
+            roles.append("staff")
+
+        # example: doctor via group
+        if user.groups.filter(name="Doctor").exists():
+            roles.append("doctor")
+
+        token["roles"] = roles
         token["username"] = user.username
-        token["roles"] = list(user.groups.values_list("name", flat=True))
-        token["is_superuser"] = user.is_superuser
 
         return token

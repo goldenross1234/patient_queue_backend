@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'channels',
     'patient_queue',
     'accounts',
+    'patients',
 ]
 
 MIDDLEWARE = [
@@ -189,3 +190,5 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+GOOGLE_CLIENT_ID = "570583645706-8sgtjpo7ub987eeu3r67chjckg9qgf6d.apps.googleusercontent.com"
